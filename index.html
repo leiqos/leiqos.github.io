@@ -1,1 +1,240 @@
-<h1>Hello, I am a Developer!</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calm Digital Space</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-color: #f3f4f6; /* Very light cool gray */
+        --text-color: #111827; /* Near black for contrast */
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: "Outfit", sans-serif;
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+      }
+
+      /* 1. BACKGROUND CANVAS */
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+        /* This blend mode makes colors darken when they overlap, creating depth */
+        mix-blend-mode: multiply;
+        opacity: 0.8; /* Keeps colors soft */
+      }
+
+      /* 2. CENTER CONTENT */
+      .content-wrapper {
+        position: relative;
+        z-index: 10;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+      }
+
+      /* 3. GLASS CARD (Fixes Contrast Issues) */
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.6); /* Semi-transparent white */
+        backdrop-filter: blur(12px); /* Blurs the bubbles behind it */
+        -webkit-backdrop-filter: blur(12px); /* Safari support */
+        padding: 3rem 4rem;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); /* Soft shadow */
+        text-align: center;
+        pointer-events: auto; /* Allows selecting text */
+
+        /* Subtle animation on load */
+        animation: floatUp 1s ease-out;
+      }
+
+      h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+        background: linear-gradient(45deg, #2d3436, #000);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      p {
+        font-size: 1.25rem;
+        color: #4b5563; /* Dark gray, easy to read */
+        font-weight: 300;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .hint {
+        margin-top: 2rem;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #9ca3af;
+        font-weight: 600;
+      }
+
+      @keyframes floatUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas1"></canvas>
+
+    <div class="content-wrapper">
+      <div class="glass-panel">
+        <h1>Creative Flow.</h1>
+        <p>Designing interfaces that breathe.</p>
+        <div class="hint">Move mouse to interact</div>
+      </div>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("canvas1");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particlesArray = [];
+
+      // IMPROVED COLOR PALETTE (Harmonious, Modern)
+      // These are HSLA colors for better blending
+      const colorPalette = [
+        "rgba(108, 92, 231, 0.6)", // Soft Purple
+        "rgba(0, 206, 201, 0.6)", // Teal
+        "rgba(253, 121, 168, 0.6)", // Pink
+        "rgba(250, 177, 160, 0.6)", // Peach
+      ];
+
+      const mouse = { x: null, y: null };
+
+      window.addEventListener("resize", function () {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        init();
+      });
+
+      window.addEventListener("mousemove", function (event) {
+        mouse.x = event.x;
+        mouse.y = event.y;
+      });
+
+      // Click to add gentle ripples
+      window.addEventListener("click", function (event) {
+        for (let i = 0; i < 3; i++) {
+          particlesArray.push(new Particle(event.x, event.y));
+        }
+      });
+
+      class Particle {
+        constructor(x, y) {
+          this.x = x || Math.random() * canvas.width;
+          this.y = y || Math.random() * canvas.height;
+
+          // SLOWER SPEED: Multiplier changed from 4 to 0.5
+          // This makes them drift lazily
+          this.dx = (Math.random() - 0.5) * 0.8;
+          this.dy = (Math.random() - 0.5) * 0.8;
+
+          this.size = Math.random() * 20 + 10;
+          this.minSize = this.size;
+          this.maxSize = Math.random() * 80 + 50;
+
+          this.color =
+            colorPalette[Math.floor(Math.random() * colorPalette.length)];
+        }
+
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        }
+
+        update() {
+          // Move
+          this.x += this.dx;
+          this.y += this.dy;
+
+          // Bounce (Slowly)
+          if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+            this.dx = -this.dx;
+          }
+          if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+            this.dy = -this.dy;
+          }
+
+          // INTERACTION: Gentle growth
+          // Increased range to 120px for smoother feel
+          if (
+            mouse.x - this.x < 120 &&
+            mouse.x - this.x > -120 &&
+            mouse.y - this.y < 120 &&
+            mouse.y - this.y > -120
+          ) {
+            if (this.size < this.maxSize) {
+              this.size += 1.5; // Slower growth rate (was 3)
+            }
+          } else if (this.size > this.minSize) {
+            this.size -= 0.2; // Slower shrink rate (was 0.5)
+          }
+
+          this.draw();
+        }
+      }
+
+      function init() {
+        particlesArray = [];
+        // Reduced count slightly for cleaner look
+        for (let i = 0; i < 50; i++) {
+          particlesArray.push(new Particle());
+        }
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+        for (let i = 0; i < particlesArray.length; i++) {
+          particlesArray[i].update();
+        }
+      }
+
+      init();
+      animate();
+    </script>
+  </body>
+</html>
