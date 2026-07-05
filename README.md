@@ -1,28 +1,49 @@
-# Calm Digital Space (leiqos.github.io)
+Eine WebGL-Fluid-Simulation im Stil von iog.io — Navier-Stokes ("Stable Fluids" nach Jos Stam)
+komplett auf der GPU, ohne Dependencies, in einer einzigen `index.html`.
 
-![Screenshot of my project](screen.png)
+## Starten
 
-A serene, interactive landing page built with HTML5 Canvas, CSS, and Vanilla JavaScript. 
+Einfach `index.html` im Browser öffnen (Doppelklick genügt), oder mit lokalem Server:
 
-## ✨ Features
-- **Interactive Canvas Environment**: Floating, colorful orbs react to mouse movements.
-- **Click Effects**: Clicking the canvas generates gentle ripples of new particles.
-- **Modern aesthetics**: A clean glassmorphism panel overlay with smooth entry animations and harmonious HSLA colors (`multiply` blend mode).
-- **Fully Responsive**: Adapts automatically to window resizing to ensure a seamless experience on any device.
-- **Lightweight**: Zero external dependencies—just fast, native web technologies.
+```
+python -m http.server 4173
+```
 
-## 🛠️ Technologies Used
-- **HTML5 Canvas API** for rendering the particle system.
-- **CSS3** (Custom Properties, Flexbox, Glassmorphism, Animations).
-- **Vanilla JavaScript** (ES6+ Classes, `requestAnimationFrame` for smooth 60fps rendering).
+→ http://localhost:4173
 
-## 🚀 How to Run Locally
-Because this project utilizes standard web technologies with no build steps, you can run it instantly:
+## Steuerung
 
-1. Clone this repository to your local machine:
-   ```bash
-   git clone https://github.com/leiqos/leiqos.github.io.git
-   ```
-2. Navigate into the project folder.
-3. Open `index.html` in your favorite web browser.
-4. Move your mouse or click to interact with the particles!
+| Eingabe | Wirkung |
+| --- | --- |
+| Maus bewegen | Fluid stören (Farbspur) |
+| Klick / Touch | Splash |
+| Leertaste | Pause |
+| B | Farb-Burst |
+| "Fluid GPU"-Chip unten rechts | Einstellungs-Panel |
+
+## Features
+
+- **Simulation:** Semi-Lagrange-Advektion, Jacobi-Drucklöser (24 Iterationen),
+  Vorticity Confinement für die charakteristischen Wirbel — Sim-Grid bis 256er
+  Auflösung, Farbtextur bis 2048 (Preset "Ultra").
+- **Rendering:** Volumetrische Lichtabschattung (Sunrays), Normal-Shading auf
+  der Farbdichte; optional HDR-Bloom (Multi-Pass Downsample/Upsample,
+  standardmäßig aus — im Panel zuschaltbar).
+- **Tempo-Regler:** Globaler Zeitfaktor (Standard 0.3, entspannt-langsam)
+  verlangsamt die ganze Simulation gleichmäßig — von Zeitlupe (0.2) bis
+  doppelter Geschwindigkeit (2.0).
+- **Harmonische Farbpalette:** Ein Basis-Farbton driftet langsam übers Farbrad;
+  alle Farben (Maus, Emitter, Bursts) bleiben in seiner Nachbarschaft —
+  wechselnde, aber immer stimmige Kombinationen.
+- **Funken-Partikel:** 65.536 GPU-Partikel (RGBA32F-Ping-Pong), die vom
+  Geschwindigkeitsfeld advektiert werden und nur in hellen, schnellen
+  Bereichen aufleuchten (standardmäßig aus, im Panel zuschaltbar).
+- **Auto-Flow:** Zwei unsichtbare Emitter auf gegenläufigen Lissajous-Bahnen —
+  ein Haupt-Band mit heißem Komplementär-Kern und ein Gegen-Band mit
+  versetztem Farbton — weben ohne Interaktion eine durchgehende Komposition
+  (abschaltbar im Panel).
+- **Fallbacks:** WebGL2 mit Half-Float bevorzugt; WebGL1-Fallback mit manueller
+  bilinearer Filterung, reduzierten Effekten und ohne Partikel.
+
+Architektur der Render-Pipeline inspiriert von Pavel Dobryakovs
+[WebGL-Fluid-Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation) (MIT).
