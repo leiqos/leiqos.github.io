@@ -1,4 +1,4 @@
-Eine WebGL-Fluid-Simulation im Stil von iog.io — Navier-Stokes ("Stable Fluids" nach Jos Stam)
+Eine WebGL-Fluid-Simulation im Stil  Navier-Stokes ("Stable Fluids" nach Jos Stam)
 komplett auf der GPU, ohne Dependencies, in einer einzigen `index.html`.
 
 ## Starten
