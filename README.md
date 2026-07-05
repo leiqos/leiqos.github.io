@@ -1,6 +1,3 @@
-Eine WebGL-Fluid-Simulation im Stil  Navier-Stokes ("Stable Fluids" nach Jos Stam)
-komplett auf der GPU, ohne Dependencies, in einer einzigen `index.html`.
-
 ## Starten
 
 Einfach `index.html` im Browser öffnen (Doppelklick genügt), oder mit lokalem Server:
